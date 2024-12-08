@@ -21,8 +21,11 @@ public class PreptresController {
 		
 		if(os.contains("Windows")) {// Validação do Sistema Operacional para definir o diretório em que o arquivo 'wiki.json' se encontra.
 			caminho = "C:/TEMP";
-		}else if(os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+		}else if(os.contains("Linux")) {
 			caminho = "/tmp";
+		}else {
+			System.err.println("Sistema Operacional não compatível!");
+			return;
 		}
 		
 		File arquivo = new File(caminho, "wiki.json");
@@ -41,9 +44,9 @@ public class PreptresController {
 					datasViews.append("\n");
 				}
 				
-				fluxo.close();
-				leitor.close();
 				buffer.close();
+				leitor.close();
+				fluxo.close();
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
@@ -54,7 +57,7 @@ public class PreptresController {
 				
 				String[] campos = linha.split(","); // Divide cada campo da linha em um vetor, separando os campos por ','.
 				
-				int i = 0, campoViews = 0;
+				int campoViews = 0;
 				String ano = "";
 				String mes = "";
 				String dia = "";
@@ -64,25 +67,24 @@ public class PreptresController {
 					
 					if(campo.contains("timestamp")) {
 						
-						int timestamp = campos[i].indexOf(":"); // Pega o index do ':' que vem em seguida do nome do campo (nesse caso por exemplo: "timestamp":"202109...) para ter uma referência das posições do substring.
+						int timestamp = campo.indexOf(":"); // Pega o index do ':' que vem em seguida do nome do campo (nesse caso por exemplo: "timestamp":"202109...) para ter uma referência das posições do substring.
 						
 						// Abaixo, são atribuidos os devidos valores de data nas variáveis para facilitar a manipulação das mesmas na hora de printar.
-						ano = campos[i].substring(timestamp + 2, timestamp + 6);
-						mes = campos[i].substring(timestamp + 6, timestamp + 8);
-						dia = campos[i].substring(timestamp + 8, timestamp + 10);
+						ano = campo.substring(timestamp + 2, timestamp + 6);
+						mes = campo.substring(timestamp + 6, timestamp + 8);
+						dia = campo.substring(timestamp + 8, timestamp + 10);
 					}
 					
 					if(campo.contains("views")) {
 						
 						campoViews = campo.indexOf(":"); // Pega o index do ':' que vem em seguida do nome do campo para ter uma referência das posições do substring.
-						views = Integer.parseInt(campos[i].substring(campoViews+1));
+						views = Integer.parseInt(campo.substring(campoViews+1));
 						
 						String data = "Data: " + dia + "/" + mes + "/" + ano + "\n Número de Views do dia: " + views + "\n"; // Padroniza a estrutura de como as datas e a quantidade de views por serão printadas.
 						
 						System.out.println(data); // Apresenta a data (timestamp (Sem o 00 do final)) e os views de todos os dias.
 					}
 					
-					i++; // Garante que os dados sejam atribuidos de acordo com o nome do campo e não a um valor chumbado.
 				}
 			}
 		}else {
